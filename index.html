@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8" />
+  <title>資料填寫</title>
+  <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      max-width: 480px;
+      margin: auto;
+    }
+    label {
+      display: block;
+      margin-top: 12px;
+    }
+    button {
+      margin-top: 20px;
+      padding: 12px;
+      width: 100%;
+    }
+  </style>
+</head>
+<body>
+
+<h2>資料填寫</h2>
+
+<label>您屬於哪一類</label>
+<select id="category">
+  <option value="">請選擇</option>
+  <option value="展場客戶">展場客戶</option>
+  <option value="舊客戶">舊客戶</option>
+  <option value="經銷商">經銷商</option>
+</select>
+
+<label>公司名稱</label>
+<input type="text" id="company" />
+
+<label>國別</label>
+<input type="text" id="country" />
+
+<button onclick="submitForm()">送出</button>
+
+<script>
+  // 🔴 這兩個一定要換
+  const LIFF_ID = "你的 LIFF ID";
+  const API_URL = "你的 Apps Script /exec URL";
+
+  async function submitForm() {
+    await liff.init({ liffId: LIFF_ID });
+
+    if (!liff.isLoggedIn()) {
+      liff.login();
+      return;
+    }
+
+    const profile = await liff.getProfile();
+
+    const payload = {
+      userId: profile.userId,
+      category: document.getElementById("category").value,
+      company: document.getElementById("company").value,
+      country: document.getElementById("country").value
+    };
+
+    await fetch(API_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload)
+    });
+
+    alert("資料已送出，謝謝！");
+    liff.closeWindow();
+  }
+</script>
+
+</body>
+</html>
